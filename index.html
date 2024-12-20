@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert Video to Frames</title>
+</head>
+<body>
+    <h1>Convert Video to Frames</h1>
+
+    <!-- Video element with CORS support -->
+    <video id="videoPlayer" controls width="640" height="360" crossOrigin="anonymous">
+        <source src="http://localhost:3000/api/stream" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Button to start the conversion -->
+    <button id="startConversion">Start Conversion</button>
+
+    <!-- Canvas element to capture video frames -->
+    <canvas id="videoCanvas" width="640" height="360" style="display: none;"></canvas>
+
+    <script>
+        const video = document.getElementById('videoPlayer');
+        const canvas = document.getElementById('videoCanvas');
+        const ctx = canvas.getContext('2d');
+        const startButton = document.getElementById('startConversion');
+
+        let frameCount = 0;
+        let conversionInProgress = false;
+
+        // Function to convert video to frames and save them
+        const convertVideoToFrames = () => {
+            if (!conversionInProgress) return; // Stop if conversion is not in progress
+
+            // Ensure video is playing
+            if (!video.paused && !video.ended) {
+                // Draw the current frame to the canvas
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Convert canvas to data URL (image)
+                const imageDataUrl = canvas.toDataURL('image/png');
+                
+                // Create a download link for the image
+                const link = document.createElement('a');
+                link.href = imageDataUrl;
+                link.download = `frame_${frameCount}.png`; // Frame naming pattern
+                link.click(); // Trigger the download
+                
+                // Increment frame count
+                frameCount++;
+
+                // Request next frame after a short delay (adjust the interval for frame rate)
+                setTimeout(convertVideoToFrames, 100); // 10 frames per second (adjust as needed)
+            } else {
+                conversionInProgress = false; // Stop if video ends
+            }
+        };
+
+        // Start the conversion when button is clicked
+        startButton.addEventListener('click', () => {
+            if (!video.paused && !video.ended) {
+                conversionInProgress = true; // Start the conversion
+                convertVideoToFrames(); // Begin conversion
+            } else {
+                alert('Please play the video before starting conversion.');
+            }
+        });
+    </script>
+</body>
+</html>

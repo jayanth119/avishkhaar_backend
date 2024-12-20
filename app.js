@@ -6,8 +6,10 @@ var logger = require('morgan');
 var videoRoute =  require('./routes/videoRoute'); 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+const cors = require('cors');
+var captionRouter = require('./routes/captionRoute' ) ; 
 var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,10 +20,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(cors());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api' , videoRoute) ; 
+app.use('/api' , captionRouter );
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

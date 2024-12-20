@@ -4,42 +4,42 @@ const fs = require('fs');
 const path = require('path');
 
 
-
-// Path to your video file
-const videoPath = path.join(__dirname, 'video.mp4');
-
 router.get('/stream', (req, res) => {
-  const range = req.headers.range;
-  if (!range) {
-    res.status(400).send('Requires Range header');
-    return;
-  }
+    const videoPath = path.join(__dirname , 'videoplayback.mp4');
+    if (!fs.existsSync(videoPath)) {
+        return res.status(404).send('Video not found');
+    }
 
-  // Video duration in seconds (approximation)
-  const videoDuration = 3 * 60; // 15 minutes in seconds
-  const chunkDuration = 2 * 60; // 2 minutes in seconds
+    const videoStat = fs.statSync(videoPath);
+    const fileSize = videoStat.size;
+    const range = req.headers.range;
 
-  // File stats to get the size of the video
-  const videoStats = fs.statSync(videoPath);
-  const videoSize = videoStats.size;
+    if (range) {
+        const parts = range.replace(/bytes=/, '').split('-');
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
-  // Compute start and end byte range
-  const CHUNK_SIZE = Math.ceil((chunkDuration / videoDuration) * videoSize);
-  const start = Number(range.replace(/\D/g, ''));
-  const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+        const chunkSize = (end - start) + 1;
+        const file = fs.createReadStream(videoPath, { start, end });
+        const headers = {
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunkSize,
+            'Content-Type': 'video/mp4',
+        };
 
-  // Headers to inform the browser about the streamed content
-  const contentLength = end - start + 1;
-  res.writeHead(206, {
-    'Content-Range': `bytes ${start}-${end}/${videoSize}`,
-    'Accept-Ranges': 'bytes',
-    'Content-Length': contentLength,
-    'Content-Type': 'video/mp4',
-  });
+        res.writeHead(206, headers);
+        file.pipe(res);
+    } else {
+        const headers = {
+            'Content-Length': fileSize,
+            'Content-Type': 'video/mp4',
+        };
 
-  // Create a readable stream and pipe it to the response
-  const videoStream = fs.createReadStream(videoPath, { start, end });
-  videoStream.pipe(res);
+        res.writeHead(200, headers);
+        fs.createReadStream(videoPath).pipe(res);
+    }
 });
+
 
 module.exports = router  ; 
