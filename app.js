@@ -7,6 +7,10 @@ var videoRoute =  require('./routes/videoRoute');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const cors = require('cors');
+var loginRouter = require('./routes/login')
+var SignupRouter = require('./routes/signup');
+var SendOtpRouter = require('./routes/sendotp')
+var VerifyOtpRouter = require('./routes/verifyotp');
 var captionRouter = require('./routes/captionRoute' ) ; 
 var app = express();
 
@@ -25,10 +29,27 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api' , videoRoute) ; 
 app.use('/api' , captionRouter );
+app.use('/api', SignupRouter);
+app.use('/api', loginRouter);
+app.use('/api', SendOtpRouter);
+app.use('/api', VerifyOtpRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+
+const uri = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.3"
+
+mongoose
+  .connect(uri)
+  .then(() => {
+    console.log('MongoDb is connected');
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+console.log("testing2");
 
 // error handler
 app.use(function(err, req, res, next) {
