@@ -2,7 +2,6 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { Kafka } = require('kafkajs');
-const { createCanvas, loadImage } = require('canvas');
 
 const router = express.Router();
 
@@ -14,75 +13,87 @@ const kafka = new Kafka({
 const producer = kafka.producer();
 const topicPrefix = 'cctv-frames'; // Kafka topic name prefix
 
-// Function to process video frames and send to Kafka
-const convertVideoToFrames = async (videoPath, cctvId) => {
+// Function to simulate frame data and send to Kafka for multiple CCTV IDs
+const processCCTVFrames = async (cctvIds) => {
     await producer.connect();
-    console.log(`Kafka producer connected for CCTV ID: ${cctvId}`);
+    console.log('Kafka producer connected');
 
-    const canvas = createCanvas(640, 360); // Adjust dimensions as needed
-    const ctx = canvas.getContext('2d');
-
-    const video = await loadImage(videoPath); // Simulate video loading (replace with actual video processing library if needed)
-    let frameCount = 0;
     const frameInterval = 1000; // 1 frame per second
+    const maxFrames = 10; // Number of frames to generate per CCTV (for demo purposes)
+
+    let frameCounts = {}; // Track frame count for each CCTV
+    cctvIds.forEach(cctvId => {
+        frameCounts[cctvId] = 0;
+    });
 
     const sendFrame = async () => {
-        if (frameCount < 10) { // Example: Produce 10 frames (adjust as needed)
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let allFramesProcessed = true;
 
-            // Convert canvas to image buffer
-            const imageBuffer = canvas.toBuffer('image/png');
+        for (const cctvId of cctvIds) {
+            if (frameCounts[cctvId] < maxFrames) {
+                allFramesProcessed = false;
 
-            // Send frame to Kafka
-            const topic = `${topicPrefix}-${cctvId}`;
-            await producer.send({
-                topic,
-                messages: [
-                    {
-                        key: `frame_${frameCount}`,
-                        value: imageBuffer.toString('base64'), // Send as base64 string
-                    },
-                ],
-            });
+                // Simulate frame data
+                const frameData = {
+                    cctvId,
+                    frameNumber: frameCounts[cctvId],
+                    timestamp: new Date().toISOString(),
+                    data: `Mock frame data for CCTV ID ${cctvId}, frame ${frameCounts[cctvId]}`,
+                };
 
-            console.log(`Produced frame_${frameCount} for CCTV ID: ${cctvId}`);
+                // Send frame to Kafka
+                const topic = `${topicPrefix}-${cctvId}`;
+                await producer.send({
+                    topic,
+                    messages: [
+                        {
+                            key: `frame_${frameCounts[cctvId]}`,
+                            value: JSON.stringify(frameData),
+                        },
+                    ],
+                });
 
-            frameCount++;
+                console.log(`Produced frame_${frameCounts[cctvId]} for CCTV ID: ${cctvId}`);
+
+                frameCounts[cctvId]++;
+            }
+        }
+
+        if (!allFramesProcessed) {
             setTimeout(sendFrame, frameInterval);
         } else {
             await producer.disconnect();
-            console.log(`Kafka producer disconnected for CCTV ID: ${cctvId}`);
+            console.log('Kafka producer disconnected');
         }
     };
 
     sendFrame();
 };
 
-// API route to start frame extraction for a specific CCTV
-router.post('/process/:cctvId', async (req, res) => {
-    const { cctvId } = req.params;
-    const videoPath = path.join(__dirname, 'videoplayback.mp4'); // Example naming pattern for CCTV videos
+// API route to start frame extraction for multiple CCTVs
+router.post('/process', async (req, res) => {
+    const { cctvIds } = req.body; // Expect an array of CCTV IDs in the request body
 
-    if (!fs.existsSync(videoPath)) {
-        return res.status(404).json({ message: `Video for CCTV ID: ${cctvId} not found` });
+    if (!Array.isArray(cctvIds) || cctvIds.length === 0) {
+        return res.status(400).json({ message: 'Invalid CCTV IDs' });
     }
 
     try {
-        convertVideoToFrames(videoPath, cctvId);
-        res.status(200).json({ message: `Started processing video for CCTV ID: ${cctvId}` });
+        processCCTVFrames(cctvIds);
+        res.status(200).json({ message: 'Started processing mock frames for CCTV IDs', cctvIds });
     } catch (error) {
-        console.error(`Error processing video for CCTV ID: ${cctvId}`, error);
-        res.status(500).json({ message: `Error processing video for CCTV ID: ${cctvId}` });
+        console.error('Error processing mock frames:', error);
+        res.status(500).json({ message: 'Error processing mock frames', error: error.message });
     }
 });
 
 // API route to list available CCTV videos
-router.get('/list', (req, res) => {
-    const videoDir = __dirname;
-    const videoFiles = fs.readdirSync(videoDir).filter(file => file.endsWith('.mp4'));
-    const cctvIds = videoFiles.map(file => file.replace('cctv_', '').replace('.mp4', ''));
+// router.get('/list', (req, res) => {
+//     const videoDir = __dirname;
+//     const videoFiles = fs.readdirSync(videoDir).filter(file => file.endsWith('.mp4'));
+//     const cctvIds = videoFiles.map(file => file.replace('cctv_', '').replace('.mp4', ''));
 
-    res.status(200).json({ cctvIds });
-});
+//     res.status(200).json({ cctvIds });
+// });
 
 module.exports = router;
