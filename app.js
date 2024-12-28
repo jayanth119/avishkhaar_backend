@@ -12,9 +12,10 @@ var SignupRouter = require('./routes/signup');
 var SendOtpRouter = require('./routes/sendotp')
 var mongoose = require('mongoose');
 var dashboardRouter = require('./routes/dashboardRoute');
-// var VerifyOtpRouter = require('./routes/verifyotp');
-// var captionRouter = require('./routes/captionRoute' ) ; 
+var VerifyOtpRouter = require('./routes/verifotp');
+var captionRouter = require('./routes/captionRoute' ) ; 
 var cctvRouter = require('./routes/cctvRoute');
+var captionPlaceRouter = require('./routes/captionplaceRoute');
 var app = express();
 
 
@@ -31,13 +32,14 @@ app.use(cors());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api' , videoRoute) ; 
-// app.use('/api' , captionRouter );
+app.use('/api' , captionRouter );
 app.use('/api', SignupRouter);
 app.use('/api', loginRouter);
 app.use('/api', SendOtpRouter);
 app.use('/api', cctvRouter);
 app.use('/api', dashboardRouter);
-// app.use('/api', VerifyOtpRouter);
+app.use('/api', VerifyOtpRouter);
+app.use('/api', captionPlaceRouter);
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {
 //   next(createError(404));
