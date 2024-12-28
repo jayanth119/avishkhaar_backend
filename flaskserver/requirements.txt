@@ -1,0 +1,11 @@
+langchain==0.0.316
+pypdf
+pinecone-client
+openai==0.28.1
+langchainhub
+tiktoken
+nest_asyncio
+faiss-cpu
+mpv
+elevenlabs
+ipython-autotime
