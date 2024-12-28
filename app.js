@@ -16,6 +16,7 @@ var VerifyOtpRouter = require('./routes/verifotp');
 var captionRouter = require('./routes/captionRoute' ) ; 
 var cctvRouter = require('./routes/cctvRoute');
 var captionPlaceRouter = require('./routes/captionplaceRoute');
+var chatBotRouter = require('./routes/chatBotRoute');
 var app = express();
 
 
@@ -40,6 +41,7 @@ app.use('/api', cctvRouter);
 app.use('/api', dashboardRouter);
 app.use('/api', VerifyOtpRouter);
 app.use('/api', captionPlaceRouter);
+app.use('/api', chatBotRouter);
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {
 //   next(createError(404));
