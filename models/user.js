@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema(
     },
     locationId: {
       type: "string",
-      required: true,
     },
   },
   {

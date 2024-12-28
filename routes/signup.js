@@ -13,11 +13,12 @@ const registerUser = async (userData, role, res) => {
     const existingUser = await User.findOne(
       role === "admin" ? { $or: [{ email }] } : { email }
     );
+
     if (existingUser) {
       return res.status(400).json({
         error: `User with this email ${
           role === "admin" ? "or psbBadge" : ""
-        }already exists`,
+        } already exists`,
       });
     }
 
@@ -45,15 +46,15 @@ const registerUser = async (userData, role, res) => {
 
 // Driver Signup API
 router.post("/signup/admin", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, locationId } = req.body;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !locationId) {
     return res
       .status(400)
-      .json({ error: "All fields are required for driver signup" });
+      .json({ error: "All fields are required for signup" });
   }
 
-  await registerUser({ name, email: password }, "admin", res);
+  await registerUser({ name, email, password, locationId }, "admin", res);
 });
 
 // Normal User Signup API
