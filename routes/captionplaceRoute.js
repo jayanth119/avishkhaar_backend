@@ -5,17 +5,18 @@ const router = app.Router()
 const Caption = require('../models/caption');
 
 
-// Get captions for a specific place and CCTV
-router.get('/place/cctvid/getsummary', async (req, res) => {
-    try {
-      const locationId = req.query.locationId;
-      const cctvid = req.query.cctvid;
-      const captions = await Caption.find({ locationId, cctvid });
-      res.json(captions);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server Error' });
-    }
-  });
+// 2. Get captions of place and particular CCTV
+router.get('/place/:locationId/:cctvid/getsummary', async (req, res) => {
+  try {
+    const captions = await Caption.find({
+      locationId: req.params.locationId,
+      cctvid: req.params.cctvid,
+    });
+    res.json(captions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
   module.exports = router ; 

@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.3.0",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "canvas": "^2.11.2",
@@ -13,7 +14,6 @@
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.1",
-    "faker": "^6.6.6",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "jsonwebtoken": "^9.0.2",

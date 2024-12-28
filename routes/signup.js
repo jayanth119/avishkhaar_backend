@@ -43,7 +43,7 @@ const registerUser = async (userData, role, res) => {
 };
 
 // Driver Signup API
-router.post('/signup/driver', async (req, res) => {
+router.post('/signup/admin', async (req, res) => {
   const { name, email ,  password } = req.body;
 
   if (!name || !email || !password) {
