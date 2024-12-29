@@ -6,7 +6,7 @@ var logger = require("morgan");
 const cors = require("cors");
 const dotenv = require("dotenv");
 var generateReportRouter = require("./routes/generateReportReport");
-var videoRoute = require("./routes/videoRoute");
+// var videoRoute = require("./routes/videoRoute");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var loginRouter = require("./routes/login");
@@ -18,7 +18,7 @@ var VerifyOtpRouter = require("./routes/verifotp");
 var captionRouter = require("./routes/captionRoute");
 var cctvRouter = require("./routes/cctvRoute");
 var captionPlaceRouter = require("./routes/captionplaceRoute");
-const producer = require('./setup/kafka') ; 
+// const producer = require('./setup/kafka') ; 
 // var chatBotRouter = require("./routes/chatBotRoute");
 var app = express();
 dotenv.config();
@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-app.use("/api", videoRoute);
+// app.use("/api", videoRoute);
 app.use("/api", captionRouter);
 app.use("/api", SignupRouter);
 app.use("/api", loginRouter);
@@ -63,16 +63,16 @@ mongoose
     console.log(err);
   });
 
-// Connect the Kafka Producer
-(async () => {
-  try {
-      await producer.connect();
-      console.log('Kafka Producer connected');
-  } catch (error) {
-      console.error('Error connecting Kafka Producer:', error);
-  }
-})();
-
+// // Connect the Kafka Producer
+// (async () => {
+//   try {
+//       await producer.connect();
+//       console.log('Kafka Producer connected');
+//   } catch (error) {
+//       console.error('Error connecting Kafka Producer:', error);
+//   }
+// })();
+//contionously print 
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
