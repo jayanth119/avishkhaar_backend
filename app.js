@@ -5,7 +5,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const cors = require("cors");
 const dotenv = require("dotenv");
-var generateReportRouter = require("./routes/generateReportReport");
+// var generateReportRouter = require("./routes/generateReportReport");
 var videoRoute = require("./routes/videoRoute");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -43,7 +43,8 @@ app.use("/api", cctvRouter);
 app.use("/api", dashboardRouter);
 app.use("/api", VerifyOtpRouter);
 app.use("/api", captionPlaceRouter);
-app.use("/api", generateReportRouter);
+// app.use("/api", generateReportRouter);
+
 // app.use("/api", chatBotRouter);
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {

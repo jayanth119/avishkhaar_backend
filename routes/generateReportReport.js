@@ -3,9 +3,9 @@ const router = express.Router();
 const Report = require("../models/report");
 const Cctv = require("../models/cctv");
 const admin = require("firebase-admin"); // Firebase Admin SDK
-const geolib = require('geolib');
+const geolib = require("geolib");
 admin.initializeApp({
-  credential: admin.credential.cert(require('backend/google-services.json')), // Firebase Service Account Key
+  credential: admin.credential.cert(require("backend/google-services.json")), // Firebase Service Account Key
 });
 
 const MAX_DISTANCE = 20000; // 20 km in meters
@@ -23,7 +23,7 @@ const findNearbyUsers = async (location) => {
 };
 
 // Report traffic issue with notification
-router.post('/report', async (req, res) => {
+router.post("/report", async (req, res) => {
   const { title, description, location, priority, reportedBy } = req.body;
 
   if (!["Accident", "Theft", "Road Block"].includes(description)) {
@@ -75,7 +75,9 @@ router.post('/report', async (req, res) => {
       report,
     });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Internal server error", details: error.message });
   }
 });
 
