@@ -4,9 +4,9 @@ const Report = require("../models/report");
 const Cctv = require("../models/cctv");
 const admin = require("firebase-admin"); // Firebase Admin SDK
 const geolib = require("geolib");
-admin.initializeApp({
-  credential: admin.credential.cert(require("backend/google-services.json")), // Firebase Service Account Key
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert('google-services.json'), // Firebase Service Account Key
+// });
 
 const MAX_DISTANCE = 20000; // 20 km in meters
 
@@ -47,6 +47,7 @@ router.post("/report", async (req, res) => {
 
     // Create the report
     const report = new Report({
+      title: title,
       locationId: nearestCCTV.locationId,
       cctvid: nearestCCTV.cctvid,
       description,
@@ -56,19 +57,19 @@ router.post("/report", async (req, res) => {
     await report.save();
 
     // Find nearby users
-    const nearbyUsers = await findNearbyUsers(location);
-    const tokens = nearbyUsers.map((user) => user.fcmToken).filter(Boolean);
+    // const nearbyUsers = await findNearbyUsers(location);
+    // const tokens = nearbyUsers.map((user) => user.fcmToken).filter(Boolean);
 
-    if (tokens.length > 0) {
-      // Send notification via Firebase
-      await admin.messaging().sendMulticast({
-        tokens,
-        notification: {
-          title: "Traffic Incident Reported",
-          body: `${description} reported at ${priority} priority.`,
-        },
-      });
-    }
+    // if (tokens.length > 0) {
+    //   // Send notification via Firebase
+    //   await admin.messaging().sendMulticast({
+    //     tokens,
+    //     notification: {
+    //       title: "Traffic Incident Reported",
+    //       body: `${description} reported at ${priority} priority.`,
+    //     },
+    //   });
+    // }
 
     res.status(201).json({
       message: "Traffic issue reported successfully, notifications sent",
