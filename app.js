@@ -18,6 +18,7 @@ var VerifyOtpRouter = require("./routes/verifotp");
 var captionRouter = require("./routes/captionRoute");
 var cctvRouter = require("./routes/cctvRoute");
 var captionPlaceRouter = require("./routes/captionplaceRoute");
+const producer = require('./setup/kafka') ; 
 // var chatBotRouter = require("./routes/chatBotRoute");
 var app = express();
 dotenv.config();
@@ -61,6 +62,16 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+// Connect the Kafka Producer
+(async () => {
+  try {
+      await producer.connect();
+      console.log('Kafka Producer connected');
+  } catch (error) {
+      console.error('Error connecting Kafka Producer:', error);
+  }
+})();
 
 // error handler
 app.use(function (err, req, res, next) {
