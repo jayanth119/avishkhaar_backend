@@ -2,3 +2,4 @@ routes/videoplayback.mp4
 node_modules
 .env
 google-services.json
+env
