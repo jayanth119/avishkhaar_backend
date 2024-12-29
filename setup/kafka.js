@@ -1,8 +1,10 @@
 const { Kafka } = require('kafkajs');
-// Kafka configuration
+// Kafka Configuration
 const kafka = new Kafka({
-    clientId: 'video-frame-producer',
-    brokers: ['localhost:9092'], // Replace with your Kafka broker(s)
+    clientId: 'cctv-monitoring-producer',
+    brokers: ['localhost:9092'], // Replace with your Kafka brokers
 });
-const producer = kafka.producer();
-const topic = 'video-frames'; // Kafka topic name
+
+const producer = kafka.producer(); 
+
+module.exports = producer; 
